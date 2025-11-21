@@ -1,4 +1,3 @@
-package purse;
 
 import java.util.Scanner;
 
@@ -8,7 +7,7 @@ public class MainPurse {
         int[] userPIN = {1, 2, 3, 4};
         int[] adminPIN = {9, 9, 9, 9};
 
-        purse.Purse purse = new purse.Purse(userPIN, adminPIN);
+        Purse purse = new Purse(userPIN, adminPIN);
         Scanner sc = new Scanner(System.in);
 
         boolean running = true;

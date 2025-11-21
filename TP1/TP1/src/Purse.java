@@ -1,5 +1,3 @@
-package purse;
-
 import java.util.Scanner;
 import java.util.Arrays;
 
@@ -71,18 +69,18 @@ public class Purse {
     }
 
     private int[] readPINFromConsole(String label) {
-        System.out.print("Veuillez saisir le PIN " + label + " (suite de chiffres, sans espace) : ");
+        System.out.print("Veuillez saisir le PIN " + label + " : ");
         String line = scanner.nextLine().trim();
 
         if (line.isEmpty()) {
-            throw new IllegalArgumentException("PIN vide interdit");
+            throw new IllegalArgumentException("Le code PIN ne peut pas etre vide");
         }
 
         int[] pin = new int[line.length()];
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("Le PIN doit contenir uniquement des chiffres.");
+                throw new IllegalArgumentException("Le code PIN ne peut contenur que des chiffres");
             }
             pin[i] = c - '0';
         }
@@ -91,13 +89,13 @@ public class Purse {
 
     private boolean getIdentificationUser() {
         if (lifeCycleState != LCS.USE) {
-            System.out.println("Impossible d'identifier l'utilisateur : carte non utilisable (état = " + lifeCycleState + ").");
+            System.out.println("Impossible d'identifier l'utilisateur (" + lifeCycleState + ")");
             return false;
         }
 
         if (userTriesLeft <= 0) {
             lifeCycleState = LCS.BLOCKED;
-            System.out.println("Carte bloquée : plus d'essais utilisateur restants.");
+            System.out.println("Carte bloquee !");
             return false;
         }
 
@@ -108,33 +106,33 @@ public class Purse {
             if (ok) {
                 userAuthenticate = true;
                 userTriesLeft = MAX_USER_TRIES;
-                System.out.println("Identification utilisateur réussie.");
+                System.out.println("Identification reussie");
                 return true;
             } else {
                 userTriesLeft--;
                 userAuthenticate = false;
-                System.out.println("PIN utilisateur incorrect. Essais restants : " + userTriesLeft);
+                System.out.println("PIN incorrect, essais restants : " + userTriesLeft);
                 if (userTriesLeft <= 0) {
                     lifeCycleState = LCS.BLOCKED;
-                    System.out.println("Carte bloquée suite à trop d'erreurs de PIN utilisateur.");
+                    System.out.println("Vous avez fait trop d'erreur, la carte devient bloquee");
                 }
                 return false;
             }
         } catch (IllegalArgumentException ex) {
-            System.out.println("Erreur de saisie du PIN utilisateur : " + ex.getMessage());
+            System.out.println("Erreur de saisie du code PIN : " + ex.getMessage());
             return false;
         }
     }
 
     private boolean getIdentificationAdmin() {
         if (lifeCycleState == LCS.DEAD) {
-            System.out.println("Carte morte : impossible d'identifier l'administrateur.");
+            System.out.println("Carte morte : impossible d'identifier l'administrateur");
             return false;
         }
 
         if (adminTriesLeft <= 0) {
             lifeCycleState = LCS.DEAD;
-            System.out.println("Carte morte : plus d'essais administrateur restants.");
+            System.out.println("Carte morte : plus d'essais administrateur restants");
             return false;
         }
 
@@ -144,36 +142,36 @@ public class Purse {
 
             if (ok) {
                 adminAuthenticate = true;
-                adminTriesLeft = MAX_ADMIN_TRIES; // remise à zéro des essais
-                System.out.println("Identification administrateur réussie.");
+                adminTriesLeft = MAX_ADMIN_TRIES; 
+                System.out.println("Identification administrateur reussie");
                 return true;
             } else {
                 adminTriesLeft--;
                 adminAuthenticate = false;
-                System.out.println("PIN administrateur incorrect. Essais restants : " + adminTriesLeft);
+                System.out.println("Code PIN administrateur incorrect, essais restants : " + adminTriesLeft);
                 if (adminTriesLeft <= 0) {
                     lifeCycleState = LCS.DEAD;
-                    System.out.println("Carte morte suite à trop d'erreurs de PIN administrateur.");
+                    System.out.println("Carte morte");
                 }
                 return false;
             }
         } catch (IllegalArgumentException ex) {
-            System.out.println("Erreur de saisie du PIN administrateur : " + ex.getMessage());
+            System.out.println("Erreur de saisie du codePIN administrateur : " + ex.getMessage());
             return false;
         }
     }
 
     public void PINChangeUnblock() {
         if (lifeCycleState == LCS.DEAD) {
-            System.out.println("Carte morte : impossible de débloquer le PIN utilisateur.");
+            System.out.println("Carte morte : impossible de debloquer la carte");
             return;
         }
 
-        System.out.println("Déblocage du PIN utilisateur : identification administrateur requise.");
+        System.out.println("Deblocage : identification administrateur requise");
         boolean ok = getIdentificationAdmin();
 
         if (!ok) {
-            System.out.println("Déblocage échoué (administrateur non identifié).");
+            System.out.println("Deblocage echoue");
             return;
         }
 
@@ -182,95 +180,95 @@ public class Purse {
             lifeCycleState = LCS.USE;
         }
         adminAuthenticate = false;
-        System.out.println("PIN utilisateur débloqué. Essais utilisateur remis à " + MAX_USER_TRIES + ".");
+        System.out.println("PIN utilisateur debloque, essais utilisateur remis a " + MAX_USER_TRIES);
     }
 
     public void beginTransactionDebit(int amount) {
         if (lifeCycleState != LCS.USE) {
-            throw new IllegalStateException("Carte non utilisable (état = " + lifeCycleState + ").");
+            throw new IllegalStateException("Carte non utilisable (" + lifeCycleState + ")");
         }
         if (transLeft <= 0) {
             lifeCycleState = LCS.DEAD;
-            throw new IllegalStateException("Plus de transactions disponibles (carte morte).");
+            throw new IllegalStateException("Plus de transactions disponibles");
         }
         if (amount <= 0) {
-            throw new IllegalArgumentException("Montant de débit invalide (doit être > 0).");
+            throw new IllegalArgumentException("Montant de debit negatif ou nul");
         }
         if (amount > MAX_DEBIT_AMOUNT) {
-            throw new IllegalArgumentException("Montant de débit supérieur au plafond autorisé : " + MAX_DEBIT_AMOUNT);
+            throw new IllegalArgumentException("Montant de debit superieur au plafond : " + MAX_DEBIT_AMOUNT);
         }
         if (balance - amount < 0) {
-            throw new IllegalArgumentException("Solde insuffisant pour ce débit (solde actuel = " + balance + ").");
+            throw new IllegalArgumentException("Solde insuffisant pour ce debit (solde actuel = " + balance + ")");
         }
 
         balance -= amount;
-        System.out.println("BEGIN_TRANSACTION_DEBIT : " + amount + " débité (solde provisoire = " + balance + ").");
+        System.out.println(amount + " debite (solde provisoire = " + balance + ")");
     }
 
     public void beginTransactionCredit(int amount) {
         if (lifeCycleState != LCS.USE) {
-            throw new IllegalStateException("Carte non utilisable (état = " + lifeCycleState + ").");
+            throw new IllegalStateException("Carte non utilisable (" + lifeCycleState + ")");
         }
         if (transLeft <= 0) {
             lifeCycleState = LCS.DEAD;
-            throw new IllegalStateException("Plus de transactions disponibles (carte morte).");
+            throw new IllegalStateException("Plus de transactions disponibles");
         }
         if (amount <= 0) {
-            throw new IllegalArgumentException("Montant de crédit invalide (doit être > 0).");
+            throw new IllegalArgumentException("Montant de credit negatif ou nul");
         }
         if (amount > MAX_CREDIT_AMOUNT) {
-            throw new IllegalArgumentException("Montant de crédit supérieur au plafond autorisé : " + MAX_CREDIT_AMOUNT);
+            throw new IllegalArgumentException("Montant de credit superieur au plafond : " + MAX_CREDIT_AMOUNT);
         }
         if (balance + amount > MAX_BALANCE) {
-            throw new IllegalArgumentException("Crédit impossible : dépassement du solde maximal (" + MAX_BALANCE + ").");
+            throw new IllegalArgumentException("Credit impossible : depassement du solde max (" + MAX_BALANCE + ")");
         }
 
-        System.out.println("BEGIN_TRANSACTION_CREDIT : identification utilisateur requise.");
+        System.out.println("Identification utilisateur requise");
         boolean ok = getIdentificationUser();
 
         if (!ok) {
-            System.out.println("Crédit annulé : utilisateur non identifié.");
+            System.out.println("Credit annule : utilisateur non identifie");
             return;
         }
 
         balance += amount;
-        System.out.println("Crédit de " + amount + " effectué (solde provisoire = " + balance + ").");
+        System.out.println("Credit de " + amount + " effectue (solde provisoire = " + balance + ")");
     }
 
     public void commitTransactionDebit() {
         if (lifeCycleState != LCS.USE) {
-            throw new IllegalStateException("Carte non utilisable (état = " + lifeCycleState + ").");
+            throw new IllegalStateException("Carte non utilisable (" + lifeCycleState + ")");
         }
         if (transLeft <= 0) {
             lifeCycleState = LCS.DEAD;
-            throw new IllegalStateException("Plus de transactions disponibles (carte morte).");
+            throw new IllegalStateException("Plus de transactions disponibles");
         }
 
         transLeft--;
-        System.out.println("COMMIT_TRANSACTION_DEBIT : transaction validée. Transactions restantes : " + transLeft);
+        System.out.println("Transaction validee. Transactions restantes : " + transLeft);
 
         if (transLeft == 0) {
             lifeCycleState = LCS.DEAD;
-            System.out.println("Nombre maximal de transactions atteint : carte maintenant morte.");
+            System.out.println("Nombre max de transactions atteint");
         }
     }
 
     public void commitTransactionCredit() {
         if (lifeCycleState != LCS.USE) {
-            throw new IllegalStateException("Carte non utilisable (état = " + lifeCycleState + ").");
+            throw new IllegalStateException("Carte non utilisable (" + lifeCycleState + ")");
         }
         if (transLeft <= 0) {
             lifeCycleState = LCS.DEAD;
-            throw new IllegalStateException("Plus de transactions disponibles (carte morte).");
+            throw new IllegalStateException("Plus de transactions disponibles");
         }
 
         transLeft--;
         userAuthenticate = false;
-        System.out.println("COMMIT_TRANSACTION_CREDIT : transaction validée. Transactions restantes : " + transLeft);
+        System.out.println("Transaction validee. Transactions restantes : " + transLeft);
 
         if (transLeft == 0) {
             lifeCycleState = LCS.DEAD;
-            System.out.println("Nombre maximal de transactions atteint : carte maintenant morte.");
+            System.out.println("Nombre max de transactions atteint");
         }
     }
 
