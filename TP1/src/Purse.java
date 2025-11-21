@@ -22,15 +22,7 @@ public class Purse {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public Purse(int MAX_USER_TRIES,
-                 int MAX_ADMIN_TRIES,
-                 int MAX_TRANS,
-                 int MAX_BALANCE,
-                 int MAX_CREDIT_AMOUNT,
-                 int MAX_DEBIT_AMOUNT,
-                 int[] userPIN,
-                 int[] adminPIN) {
-
+    public Purse(int MAX_USER_TRIES, int MAX_ADMIN_TRIES, int MAX_TRANS, int MAX_BALANCE, int MAX_CREDIT_AMOUNT, int MAX_DEBIT_AMOUNT, int[] userPIN, int[] adminPIN) {
         this.MAX_USER_TRIES = MAX_USER_TRIES;
         this.MAX_ADMIN_TRIES = MAX_ADMIN_TRIES;
         this.MAX_TRANS = MAX_TRANS;
@@ -38,8 +30,8 @@ public class Purse {
         this.MAX_CREDIT_AMOUNT = MAX_CREDIT_AMOUNT;
         this.MAX_DEBIT_AMOUNT = MAX_DEBIT_AMOUNT;
 
-        this.userPIN = userPIN.clone();
-        this.adminPIN = adminPIN.clone();
+        this.userPIN = userPIN;
+        this.adminPIN = adminPIN;
 
         this.userTriesLeft = MAX_USER_TRIES;
         this.adminTriesLeft = MAX_ADMIN_TRIES;
