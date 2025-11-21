@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.util.Arrays;
 
+// Luc DELACROIX - Julien BARTHOD
+
 public class Purse {
     private int[] userPIN;
     private int[] adminPIN;

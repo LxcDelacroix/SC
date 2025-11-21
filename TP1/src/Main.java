@@ -1,6 +1,11 @@
 
 import java.util.Scanner;
 
+// Luc DELACROIX - Julien BARTHOD
+
+// Fichier associé LCS.java et Purse.java
+
+// code PIN : utilisateur = 1234 ; admin = 9999
 public class Main {
 
     public static void main(String[] args) {
